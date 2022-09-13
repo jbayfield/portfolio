@@ -1,0 +1,42 @@
+baseURL = 'https://joshua.bayfield.me/'
+languageCode = 'en-gb'
+theme = "terminal"
+paginate = 5
+
+[params]
+  contentTypeName = "posts"
+  themeColor = "blue"
+  showMenuItems = 3
+  fullWidthTheme = false
+  centerTheme = false
+  autoCover = true
+  showLastUpdated = false
+
+[params.twitter]
+  creator = "joshuabayfield"
+  site = "joshuabayfield"
+
+[languages]
+  [languages.en]
+    languageName = "English"
+    title = "Josh Bayfield"
+    subtitle = "Linux systems administrator and enthusiast for all things tech"
+    copyright = 'Made with ❤️ with <a href="https://gohugo.io/">Hugo</a>'
+
+    [languages.en.params.logo]
+      logoText = "joshua.bayfield.me"
+      logoHomeLink = "/"
+
+    [languages.en.menu]
+      [[languages.en.menu.main]]
+        identifier = "infrastructure"
+        name = "SysAdmin"
+        url = "/infrastructure"
+      [[languages.en.menu.main]]
+        identifier = "theatre"
+        name = "Theatre"
+        url = "/theatre"
+      [[languages.en.menu.main]]
+        identifier = "projects"
+        name = "Projects"
+        url = "/projects"
