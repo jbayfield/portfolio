@@ -5,6 +5,12 @@ terraform {
       version = "~> 4.0"
     }
   }
+
+  backend "s3" {
+    bucket = "portfolio-jb-terraform-state"
+    key = "portfolio_state"
+    region = "eu-west-2"
+  }
 }
 
 # Configure the AWS Provider
