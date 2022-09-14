@@ -23,6 +23,7 @@ Managing IT infrastructure is my day job - in particular I'm a competent Linux S
 * Web server configuration (LAMP)
 * Email stacks (Dovecot, exim4 in particular) and related deliverability issues (SPF, DKIM, DMARC)
 * Working in service-oriented environments, managing and prioritising customer requests
+* Knows how to quit vim ;)
 
 ## Things I'm learning more about
 * Terraform for IaC
