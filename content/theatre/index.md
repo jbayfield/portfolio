@@ -4,6 +4,8 @@ type: "page"
 draft: false
 ---
 
+![Null Sector](/img/nullsector.jpg)
+
 In my spare time I volunteer as an amateur sound designer and theatre technician. This is mostly for my own enjoyment and to have a creative outlet that I wouldn't normally have in the day job. =)
 
 ## Sound design

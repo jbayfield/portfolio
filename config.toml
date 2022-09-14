@@ -21,7 +21,7 @@ paginate = 5
     languageName = "English"
     title = "Josh Bayfield"
     subtitle = "Linux systems administrator and enthusiast for all things tech"
-    copyright = 'Made with ❤️ with <a href="https://gohugo.io/">Hugo</a>'
+    copyright = 'Copyright &copy; 2022 Josh Bayfield'
 
     [languages.en.params.logo]
       logoText = "joshua.bayfield.me"
