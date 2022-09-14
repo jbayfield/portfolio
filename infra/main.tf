@@ -165,7 +165,7 @@ resource "aws_route53_record" "portfolio_alias" {
 }
 
 # Set S3 bucket policies
-data "aws_iam_policy_document" "s3_policy" {
+data "aws_iam_policy_document" "portfolio_bucket_policy_doc" {
   statement {
     actions   = ["s3:GetObject"]
     resources = ["${aws_s3_bucket.portfolio_bucket.arn}/*"]
@@ -177,16 +177,9 @@ data "aws_iam_policy_document" "s3_policy" {
   }
 }
 
-resource "aws_s3_bucket_policy" "mybucket" {
+resource "aws_s3_bucket_policy" "portfolio_bucket_policy" {
   bucket = aws_s3_bucket.portfolio_bucket.id
-  policy = data.aws_iam_policy_document.s3_policy.json
-}
-
-resource "aws_s3_bucket_public_access_block" "mybucket" {
-  bucket = aws_s3_bucket.portfolio_bucket.id
-
-  block_public_acls       = true
-  block_public_policy     = true
+  policy = data.aws_iam_policy_document.portfolio_bucket_policy_doc.json
 }
 
 # Outputs for pipeline
