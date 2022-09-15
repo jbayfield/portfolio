@@ -25,12 +25,12 @@ provider "aws" {
 }
 
 # Create bucket
-resource "aws_s3_bucket" "portfolio_bucket" {
+resource "aws_s3_bucket" "portfolio" {
   bucket_prefix = "portfolio-bucket-"
 }
 
 # Issue certificate
-resource "aws_acm_certificate" "portfolio_cert" {
+resource "aws_acm_certificate" "cert" {
   provider = aws.acm # use our us-east-1 alias
 
   domain_name       = "joshua.bayfield.me"
@@ -41,7 +41,7 @@ resource "aws_acm_certificate" "portfolio_cert" {
   }
 }
 
-resource "aws_route53_zone" "portfolio_zone" {
+resource "aws_route53_zone" "portfolio" {
   name = "joshua.bayfield.me"
 
   lifecycle {
@@ -49,9 +49,9 @@ resource "aws_route53_zone" "portfolio_zone" {
   }
 }
 
-resource "aws_route53_record" "portfolio_cert_record" {
+resource "aws_route53_record" "cert_val" {
   for_each = {
-    for dvo in aws_acm_certificate.portfolio_cert.domain_validation_options : dvo.domain_name => {
+    for dvo in aws_acm_certificate.cert.domain_validation_options : dvo.domain_name => {
       name   = dvo.resource_record_name
       record = dvo.resource_record_value
       type   = dvo.resource_record_type
@@ -63,15 +63,15 @@ resource "aws_route53_record" "portfolio_cert_record" {
   records         = [each.value.record]
   ttl             = 60
   type            = each.value.type
-  zone_id         = aws_route53_zone.portfolio_zone.zone_id
+  zone_id         = aws_route53_zone.portfolio.zone_id
 }
 
 # Wait for cert issue
-resource "aws_acm_certificate_validation" "portfolio_cert_val" {
+resource "aws_acm_certificate_validation" "cert" {
   provider = aws.acm # use our us-east-1 alias
 
-  certificate_arn         = aws_acm_certificate.portfolio_cert.arn
-  validation_record_fqdns = [for record in aws_route53_record.portfolio_cert_record : record.fqdn]
+  certificate_arn         = aws_acm_certificate.cert.arn
+  validation_record_fqdns = [for record in aws_route53_record.cert_val : record.fqdn]
 }
 
 # Set up CloudFront distribution
@@ -79,7 +79,7 @@ locals {
   s3_origin_id = "portfolioOrigin"
 }
 
-resource "aws_cloudfront_origin_access_identity" "portfolio_distribution_oai" {
+resource "aws_cloudfront_origin_access_identity" "portfolio" {
   comment = "Portfolio OAI"
 }
 
@@ -91,13 +91,13 @@ resource "aws_cloudfront_function" "portfolio_index_function" {
   code    = file("index_rewrite_function.js")
 }
 
-resource "aws_cloudfront_distribution" "portfolio_distribution" {
+resource "aws_cloudfront_distribution" "portfolio" {
   origin {
-    domain_name = aws_s3_bucket.portfolio_bucket.bucket_regional_domain_name
+    domain_name = aws_s3_bucket.portfolio.bucket_regional_domain_name
     origin_id   = local.s3_origin_id
 
     s3_origin_config {
-      origin_access_identity = aws_cloudfront_origin_access_identity.portfolio_distribution_oai.cloudfront_access_identity_path
+      origin_access_identity = aws_cloudfront_origin_access_identity.portfolio.cloudfront_access_identity_path
     }
   }
 
@@ -142,43 +142,43 @@ resource "aws_cloudfront_distribution" "portfolio_distribution" {
   }
 
   viewer_certificate {
-    acm_certificate_arn = aws_acm_certificate.portfolio_cert.arn
+    acm_certificate_arn = aws_acm_certificate.cert.arn
     ssl_support_method = "sni-only"
   }
 }
 
 resource "aws_route53_record" "portfolio_alias" {
-  zone_id = aws_route53_zone.portfolio_zone.zone_id
+  zone_id = aws_route53_zone.portfolio.zone_id
   name    = "joshua.bayfield.me"
   type    = "A"
   
   alias {
-    name = aws_cloudfront_distribution.portfolio_distribution.domain_name
-    zone_id = aws_cloudfront_distribution.portfolio_distribution.hosted_zone_id
+    name = aws_cloudfront_distribution.portfolio.domain_name
+    zone_id = aws_cloudfront_distribution.portfolio.hosted_zone_id
     evaluate_target_health = true
   }
 }
 
 # Set S3 bucket policies
-data "aws_iam_policy_document" "portfolio_bucket_policy_doc" {
+data "aws_iam_policy_document" "portfolio" {
   statement {
     actions   = ["s3:GetObject"]
-    resources = ["${aws_s3_bucket.portfolio_bucket.arn}/*"]
+    resources = ["${aws_s3_bucket.portfolio.arn}/*"]
 
     principals {
       type        = "AWS"
-      identifiers = [aws_cloudfront_origin_access_identity.portfolio_distribution_oai.iam_arn]
+      identifiers = [aws_cloudfront_origin_access_identity.portfolio.iam_arn]
     }
   }
 }
 
-resource "aws_s3_bucket_policy" "portfolio_bucket_policy" {
-  bucket = aws_s3_bucket.portfolio_bucket.id
-  policy = data.aws_iam_policy_document.portfolio_bucket_policy_doc.json
+resource "aws_s3_bucket_policy" "portfolio" {
+  bucket = aws_s3_bucket.portfolio.id
+  policy = data.aws_iam_policy_document.portfolio.json
 }
 
-resource "aws_s3_bucket_public_access_block" "portfolio_bucket_publicaccess" {
-  bucket = aws_s3_bucket.portfolio_bucket.id
+resource "aws_s3_bucket_public_access_block" "portfolio" {
+  bucket = aws_s3_bucket.portfolio.id
 
   block_public_acls       = true
   block_public_policy     = true
@@ -188,5 +188,5 @@ resource "aws_s3_bucket_public_access_block" "portfolio_bucket_publicaccess" {
 
 # Outputs for pipeline
 output "portfolio_s3_bucket_name" {
-  value = aws_s3_bucket.portfolio_bucket.bucket
+  value = aws_s3_bucket.portfolio.bucket
 }
