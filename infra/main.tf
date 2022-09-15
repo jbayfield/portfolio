@@ -15,7 +15,7 @@ terraform {
 
 # Configure the AWS Provider
 provider "aws" {
-  region = "eu-west-2"
+  region = var.s3_region
 }
 
 # ACM certificates have to be issued in us-east-1 to work with CloudFront
@@ -33,7 +33,7 @@ resource "aws_s3_bucket" "portfolio" {
 resource "aws_acm_certificate" "cert" {
   provider = aws.acm # use our us-east-1 alias
 
-  domain_name       = "joshua.bayfield.me"
+  domain_name       = var.domain_name
   validation_method = "DNS"
 
   lifecycle {
@@ -42,7 +42,7 @@ resource "aws_acm_certificate" "cert" {
 }
 
 resource "aws_route53_zone" "portfolio" {
-  name = "joshua.bayfield.me"
+  name = var.domain_name
 
   lifecycle {
     prevent_destroy = true
@@ -88,7 +88,7 @@ resource "aws_cloudfront_function" "portfolio_index_function" {
   name    = "DirectoryIndexFunction"
   runtime = "cloudfront-js-1.0"
   publish = true
-  code    = file("index_rewrite_function.js")
+  code    = file("files/index_rewrite_function.js")
 }
 
 resource "aws_cloudfront_distribution" "portfolio" {
@@ -105,7 +105,7 @@ resource "aws_cloudfront_distribution" "portfolio" {
   is_ipv6_enabled     = true
   default_root_object = "index.html"
 
-  aliases = ["joshua.bayfield.me"]
+  aliases = [var.domain_name]
 
   default_cache_behavior {
     allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
@@ -149,7 +149,7 @@ resource "aws_cloudfront_distribution" "portfolio" {
 
 resource "aws_route53_record" "portfolio_alias" {
   zone_id = aws_route53_zone.portfolio.zone_id
-  name    = "joshua.bayfield.me"
+  name    = var.domain_name
   type    = "A"
   
   alias {
@@ -184,9 +184,4 @@ resource "aws_s3_bucket_public_access_block" "portfolio" {
   block_public_policy     = true
   ignore_public_acls      = true
   restrict_public_buckets = true
-}
-
-# Outputs for pipeline
-output "portfolio_s3_bucket_name" {
-  value = aws_s3_bucket.portfolio.bucket
 }
