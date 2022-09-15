@@ -29,11 +29,6 @@ resource "aws_s3_bucket" "portfolio_bucket" {
   bucket_prefix = "portfolio-bucket-"
 }
 
-resource "aws_s3_bucket_acl" "portfolio_bucket_acl" {
-  bucket = aws_s3_bucket.portfolio_bucket.id
-  acl    = "private"
-}
-
 # Issue certificate
 resource "aws_acm_certificate" "portfolio_cert" {
   provider = aws.acm # use our us-east-1 alias
@@ -180,6 +175,15 @@ data "aws_iam_policy_document" "portfolio_bucket_policy_doc" {
 resource "aws_s3_bucket_policy" "portfolio_bucket_policy" {
   bucket = aws_s3_bucket.portfolio_bucket.id
   policy = data.aws_iam_policy_document.portfolio_bucket_policy_doc.json
+}
+
+resource "aws_s3_bucket_public_access_block" "portfolio_bucket_publicaccess" {
+  bucket = aws_s3_bucket.portfolio_bucket.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
 }
 
 # Outputs for pipeline
