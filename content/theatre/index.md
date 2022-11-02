@@ -14,5 +14,6 @@ In my spare time I volunteer as an amateur sound designer and theatre technician
 * [King Lear](https://www.rhinocerostheatrecompany.co.uk/) - Rhinoceros Theatre Company, Hampton Hill Theatre
 
 ## Operation and assistant
+* [Guardians of the Pantoverse](https://www.hamptonhilltheatre.org.uk/production/guardians-pantoverse) - Teddington Theatre Club, Hampton Hill Theatre
 * [Teechers](https://hamptonhilltheatre.org.uk/production/teechers) - Teddington Theatre Club, Hampton Hill Theatre
 * [Loot](https://hamptonhilltheatre.org.uk/production/loot) - Teddington Theatre Club, Hampton Hill Theatre
